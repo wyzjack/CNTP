@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "transformers"  
+version = "4.44.2.cntp"
+description = "Modified Hugging Face Transformers v4.44.2 for GSM8k and StrategyQA experiments with CNTP implementation"
+authors = [{ name = "Yizhou Wang", email = "wyzjack990122@email.com" }]
+license = { file = "LICENSE" }
+requires-python = ">=3.9"
+dependencies = [
+    "filelock",
+    "huggingface-hub>=0.23.0",
+    "numpy>=1.17",
+    "packaging>=20.0",
+    "pyyaml>=5.1",
+    "regex!=2019.12.17",
+    "requests",
+    "tokenizers>=0.19.1",
+    "safetensors>=0.4.1",
+    "tqdm>=4.27",
+]
+keywords = ["transformers", "nlp", "machine learning", "gsm8k_strategyqa"]
+
+[project.optional-dependencies]
+torch = ["torch"]
+tensorflow = ["tensorflow"]
+flax = ["jax", "flax"]
+
+[project.urls]
+Homepage = "https://github.com/wyzjack/CNTP"
+Repository = "https://github.com/wyzjack/CNTP.git"
+
+[project.scripts]
+transformers-cli = "transformers.commands.transformers_cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]  # Discovers the 'transformers/' package in this directory
+namespaces = false
