@@ -1,0 +1,53 @@
+# Config for running the InferenceRecipe in dev/generate_v2.py to generate output
+# from a Llama3.2 11B Vision Instruct model
+#
+# This config assumes that you've run the following command before launching:
+#  tune download meta-llama/Llama-3.2-11B-Vision-Instruct --output-dir /tmp/Llama-3.2-11B-Vision-Instruct --ignore-patterns "original/consolidated*"
+#
+# To launch, run the following command from root torchtune directory:
+#    tune run dev/generate_v2 --config llama3_2_vision/generation_v2
+
+exp_name: exp_test
+
+# Model arguments
+model:  # Pretrain
+  _component_: torchtune.models.llama3_2_vision.llama3_2_vision_11b
+
+# Transform arguments
+tokenizer:
+  _component_: torchtune.models.llama3_2_vision.llama3_2_vision_transform
+  path: /mnt/localssd/llava-cot-checkpoints/llava-cot-pretrained/Llama-3.2V-11B-cot/original/tokenizer.model
+  image_size: 560
+  max_seq_len: 8192
+
+# Checkpointer
+checkpointer:
+  _component_: torchtune.training.FullModelHFCheckpointer
+  checkpoint_dir: /mnt/localssd/llava-cot-checkpoints/llava-cot-pretrained/Llama-3.2V-11B-cot
+  checkpoint_files:
+    filename_format: model-{}-of-{}.safetensors
+    max_filename: "00009"
+  recipe_checkpoint: null
+  output_dir: /mnt/localssd/
+  model_type: LLAMA3_VISION
+
+# Device
+device: cuda
+dtype: bf16
+seed: 1234
+log_level: INFO
+
+# Generation arguments
+max_new_tokens: 2048
+temperature: 0.6 # 0.8 and 0.6 are popular values to try
+top_k: 50
+
+dataset:
+  data_files: /mnt/localssd/llava-cot-dataset/json_files/both_data-test.json
+  image_dir: /mnt/localssd/llava-cot-dataset/image_files/
+
+# prompt:
+#   # system: You are a helpful assistant who responds like the author Shakespeare.
+#   user:
+#     image: /mnt/localssd/llava-cot-dataset/image_files/chartqa/train/png/two_col_564.png
+#     text: What Year has the median number of Facebook users in the Philippines from 2017 to 2019? Answer the question using a single word or phrase.

@@ -1,0 +1,102 @@
+# Config for running the InferenceRecipe in dev/generate_v2.py to generate output
+# from a Llama3.2 11B Vision Instruct model
+#
+# This config assumes that you've run the following command before launching:
+#  tune download meta-llama/Llama-3.2-11B-Vision-Instruct --output-dir /tmp/Llama-3.2-11B-Vision-Instruct --ignore-patterns "original/consolidated*"
+#
+# To launch, run the following command from root torchtune directory:
+#    tune run dev/generate_v2 --config llama3_2_vision/generation_v2
+
+# todo:
+exp_name: exp-104
+num_thinking_token: 50
+num_thinking_of_summary: 10
+num_thinking_of_caption: 20
+num_thinking_of_reasoning: 20
+
+lora_adapter_path: /sensei-fs/users/yizhouw/projects/xuan/vlm-lora-ckpts/${exp_name}/main/adapter_0.pt
+lora_adapter_path_decoder_summary: /sensei-fs/users/yizhouw/projects/xuan/vlm-lora-ckpts/${exp_name}/decoder/summary/adapter_0.pt
+projector_weight_path_summary: /sensei-fs/users/yizhouw/projects/xuan/vlm-lora-ckpts/${exp_name}/decoder/summary/abstract_projector_summary.pth
+lora_adapter_path_decoder_caption: /sensei-fs/users/yizhouw/projects/xuan/vlm-lora-ckpts/${exp_name}/decoder/caption/adapter_0.pt
+projector_weight_path_caption: /sensei-fs/users/yizhouw/projects/xuan/vlm-lora-ckpts/${exp_name}/decoder/caption/abstract_projector_caption.pth
+lora_adapter_path_decoder_reasoning: /sensei-fs/users/yizhouw/projects/xuan/vlm-lora-ckpts/${exp_name}/decoder/reasoning/adapter_0.pt
+projector_weight_path_reasoning: /sensei-fs/users/yizhouw/projects/xuan/vlm-lora-ckpts/${exp_name}/decoder/reasoning/abstract_projector_reasoning.pth
+
+data_file: data_test-num_thinking_token_${num_thinking_token}.json
+
+# Model arguments
+model:  # LoRA
+  _component_: torchtune.models.llama3_2_vision.lora_llama3_2_vision_11b
+  # decoder_trainable: "frozen"
+  # encoder_trainable: "lora"
+  # fusion_trainable: "lora"
+  lora_attn_modules: ['q_proj', 'k_proj', 'v_proj','output_proj']
+  apply_lora_to_mlp: True
+  apply_lora_to_output: False
+  lora_rank: 16  # higher increases accuracy and memory
+  lora_alpha: 32  # usually alpha=2*rank
+  lora_dropout: 0.0
+
+model_decoder:
+  _component_: torchtune.models.llama3_1.lora_llama3_1_8b
+  lora_attn_modules: ['q_proj', 'k_proj', 'v_proj', 'output_proj']
+  apply_lora_to_mlp: True
+  apply_lora_to_output: False
+  lora_rank: 16  # higher increases accuracy and memory
+  lora_alpha: 32  # usually alpha=2*rank
+  lora_dropout: 0.0
+  use_abstract_projection: True
+  projector_input_dim: 4096 # todo
+
+# Transform arguments
+tokenizer:
+  _component_: torchtune.models.llama3_2_vision.llama3_2_vision_transform
+  path: /mnt/localssd/llava-cot-checkpoints/llava-cot-pretrained/Llama-3.2V-11B-cot/original/tokenizer.model
+  image_size: 560
+  max_seq_len: 8192
+
+# Checkpointer
+checkpointer:
+  _component_: torchtune.training.FullModelHFCheckpointer
+  checkpoint_dir: /mnt/localssd/llava-cot-checkpoints/llava-cot-pretrained/Llama-3.2V-11B-cot
+  checkpoint_files:
+    filename_format: model-{}-of-{}.safetensors
+    max_filename: "00009"
+  recipe_checkpoint: null
+  output_dir: /mnt/localssd/llava-cot-checkpoints/output-checkpoints/Llama-3.2-11B-Vision-LoRA/${exp_name}/main/
+  model_type: LLAMA3_VISION
+
+# Xuan: add for decoder checkpointer
+checkpointer_decoder:
+  _component_: torchtune.training.FullModelHFCheckpointer
+  checkpoint_dir: /mnt/localssd/llava-cot-checkpoints/llama3_1/Llama-3.1-8B-Instruct/
+  checkpoint_files: [
+    model-00001-of-00004.safetensors,
+    model-00002-of-00004.safetensors,
+    model-00003-of-00004.safetensors,
+    model-00004-of-00004.safetensors
+  ]
+  recipe_checkpoint: null
+  output_dir: /mnt/localssd/llava-cot-checkpoints/output-checkpoints/Llama-3.1-8B-Instruct-LoRA/${exp_name}/decoder/
+  model_type: LLAMA3
+
+# Device
+device: cuda
+dtype: bf16
+seed: 1234
+log_level: INFO
+
+# Generation arguments
+max_new_tokens: 2048
+temperature: 0.6 # 0.8 and 0.6 are popular values to try
+top_k: 50
+
+dataset:
+  data_files: /mnt/localssd/llava-cot-dataset/json_files/${data_file}
+  image_dir: /mnt/localssd/llava-cot-dataset/image_files/
+
+# prompt:
+#   # system: You are a helpful assistant who responds like the author Shakespeare.
+#   user:
+#     image: /mnt/localssd/llava-cot-dataset/image_files/chartqa/train/png/two_col_564.png
+#     text: What Year has the median number of Facebook users in the Philippines from 2017 to 2019? Answer the question using a single word or phrase.

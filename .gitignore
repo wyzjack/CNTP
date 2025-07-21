@@ -133,7 +133,6 @@ tad/data/datasets/
 
 #output directories 
 output/
-experiments/
 
 #IDE
 .idea/
