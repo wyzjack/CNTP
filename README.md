@@ -492,7 +492,9 @@ The core implementation of CNTP is to modify the [`_sample` function](https://gi
             return input_ids
 ```
 
+## Concurrent Work
 
+After this paper is released on arXiv, we are notified of the concurrent work [Entropix](https://github.com/xjdr-alt/entropix). We were not aware of the work when writing the paper. Entropix also takes advantage of model output logit entropy to decide the LLM sampling strategy, dividing into four types: 1) Insert CoT or Pause Token 2) Resample 3) Argmax 4) Branch. This is a general and elegant approach for LLMs to simulate the o1-alike effects. The idea of using model confidence to change the sampling strategy is similar to ours. However, our CNTP differs in that: firstly, we innovatively propose to stop at punctuations, enabling multiple local optimal branching and sampling in each answer generation. Secondly, we design a specific negative correlation relationship between the answer trial sampling number and the confidence, achieving superiority over the baseline decoding approaches. We leave the comparison of CNTP and Entropix for future work.
 
 ## Citation
 
