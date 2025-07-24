@@ -1,6 +1,6 @@
 # Cautious Next Token Prediction (CNTP)
 
-[![arXiv](https://img.shields.io/badge/arXiv-2507.03038-b31b1b.svg)](https://arxiv.org/abs/2507.03038) [![huggingface](https://img.shields.io/badge/🤗-CNTP-blue)](https://huggingface.co/papers/2507.03038)
+[![arXiv](https://img.shields.io/badge/arXiv-2507.03038-b31b1b.svg)](https://arxiv.org/abs/2507.03038) [![ACL 2025](https://img.shields.io/badge/ACL-2025-blue)](https://aclanthology.org/2025.findings-acl.1318/) [![huggingface](https://img.shields.io/badge/🤗-CNTP-blue)](https://huggingface.co/papers/2507.03038) 
 
 ![CNTP](./assets/CNTP_overview.jpg)
 
@@ -501,11 +501,31 @@ After this paper is released on arXiv, we are notified of the concurrent work [E
 If you find CNTP useful, please cite our paper:
 
 ```bibtex
-@inproceedings{wang2025cntp,
-    title={Cautious Next Token Prediction},
-    author={Wang, Yizhou and Zhang, Lingzhi and Bai, Yue and Chiu, Mang Tik and Hu, Zhengmian and Zhang, Mingyuan and Dong, Qihua and Yin, Yu and Amirghodsi, Sohrab and Fu, Yun},
-    booktitle={Findings of the Association for Computational Linguistics: ACL 2025},
-    year={2025}
+@inproceedings{wang-etal-2025-cautious,
+    title = "Cautious Next Token Prediction",
+    author = "Wang, Yizhou  and
+      Zhang, Lingzhi  and
+      Bai, Yue  and
+      Chiu, Mang Tik  and
+      Hu, Zhengmian  and
+      Zhang, Mingyuan  and
+      Dong, Qihua  and
+      Yin, Yu  and
+      Amirghodsi, Sohrab  and
+      Fu, Yun",
+    editor = "Che, Wanxiang  and
+      Nabende, Joyce  and
+      Shutova, Ekaterina  and
+      Pilehvar, Mohammad Taher",
+    booktitle = "Findings of the Association for Computational Linguistics: ACL 2025",
+    month = jul,
+    year = "2025",
+    address = "Vienna, Austria",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2025.findings-acl.1318/",
+    pages = "25685--25697",
+    ISBN = "979-8-89176-256-5",
+    abstract = "Next token prediction paradigm has been prevailing for autoregressive models in the era of LLMs. The current default sampling choice for popular LLMs is temperature scaling together with nucleus sampling to balance diversity and coherence. Nevertheless, such approach leads to inferior performance in various NLP tasks when the model is not certain about testing questions. To this end, we propose a brand new training-free decoding strategy, dubbed as Cautious Next Token Prediction (CNTP). In the decoding process, if the model has comparatively high prediction entropy at a certain step, we sample multiple trials starting from the step independently and stop when encountering any punctuation. Then we select the trial with the lowest perplexity score viewed as the most probable and reliable trial path given the model{'}s capacity. The trial number is negatively correlated with the prediction confidence, i.e., the less confident the model is, the more trials it should sample. This is consistent with human beings' behaviour: when feeling uncertain or unconfident, one tends to think more creatively, exploring multiple thinking paths, to cautiously select the path one feels most confident about. Extensive experiments on both LLMs and MLLMs show that our proposed CNTP approach outperforms existing standard decoding strategies consistently by a clear margin. Moreover, the integration of CNTP with self consistency can further improve over vanilla self consistency. We believe our proposed CNTP has the potential to become one of the default choices for LLM decoding. Code is available at https://github.com/wyzjack/CNTP."
 }
 ```
 
@@ -525,7 +545,7 @@ In this code we heavily rely on the public Github repos [open-instruct](https://
 
 <div align="center">
 
-**[Paper](https://arxiv.org/abs/2507.03038) | [Code](https://github.com/wyzjack/CNTP) | [ACL 2025](https://2025.aclweb.org/program/find_papers/)**
+**[Paper](https://arxiv.org/abs/2507.03038) | [Code](https://github.com/wyzjack/CNTP) | [ACL 2025](https://aclanthology.org/2025.findings-acl.1318/)**
 
 *Making LLMs more cautious and more intelligent* 🤔
 
